@@ -1,15 +1,45 @@
+#!/usr/bin/python3
 from urllib.request import urlopen
+import json
+import urllib.request, urllib.parse
 
-book = input("Enter the book/essay/etc you need (make it work plz): ")
+def showsome(searchfor):
+  link = 'null'
+  query = urllib.parse.urlencode({'q': 'sparknotes '+searchfor})
+  url = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s' % query
+  search_response = urllib.request.urlopen(url)
+  search_results = search_response.read().decode("utf8")
+  results = json.loads(search_results)
+  data = results['responseData']
+  #print('Total results: %s' % data['cursor']['estimatedResultCount'])
+  hits = data['results']
+  #print('Top %d hits:' % len(hits))
+  for h in hits: 
+    if link=='null': link = h['url']#print(' '+h['url'])
+  #print('For more results, see %s' % data['cursor']['moreResultsUrl'])
+  return link
+
+book = input("Enter the book/essay/etc you need (as if you were... searching Google or something): \n")
+main_url = showsome(book)
+print(main_url)
+
 #title
-webpage = urlopen('http://www.sparknotes.com/lit/'+book+'/summary.html').read().decode('utf-8')
+webpage = urlopen(main_url+'/summary.html').read().decode('utf-8')
 index = webpage.index("<title>")
 index2 = webpage.index("</title>")
 print(webpage[index+7:index2].replace("SparkNotes: ","")+"\n")
 
+#facts (author)
+factspage = urlopen(main_url+'/facts.html').read().decode()
+for line in factspage.splitlines():
+    if line.find(";&nbsp;")!=-1 and line.find("</p>")!=-1 and line.find("author")!=-1:
+        start = line.index(";&nbsp;")
+        end = line.index("</p>")
+        print("Author: "+line[start+7:end].replace("&rsquo;","'")+"\n")
+
 #characters
 print("CHARACTERS")
-characterpage = urlopen('http://www.sparknotes.com/lit/'+book+'/characters.html').read().decode()
+characterpage = urlopen(main_url+'/characters.html').read().decode()
 for line in characterpage.splitlines():
     if line.find("<b>")!=-1:
         start = line.index("<b>")
@@ -17,7 +47,7 @@ for line in characterpage.splitlines():
         print("-"+line[start+3:end].replace("&rsquo;","'"))
 
 #themes
-themespage = urlopen('http://www.sparknotes.com/lit/'+book+'/themes.html').read().decode('utf-8')
+themespage = urlopen(main_url+'/themes.html').read().decode('utf-8')
 theme_tit_s = themespage.index("<title>")
 theme_tit_e = themespage.index("</title>")
 print("\n"+themespage[theme_tit_s+7:theme_tit_e].replace("SparkNotes: ",""))

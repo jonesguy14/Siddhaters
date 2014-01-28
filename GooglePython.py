@@ -12,8 +12,10 @@ def showsome(searchfor):
   print('Total results: %s' % data['cursor']['estimatedResultCount'])
   hits = data['results']
   print('Top %d hits:' % len(hits))
-  for h in hits: print(' '+h['url'])
+  for h in hits: link = h['url']#print(' '+h['url'])
   print('For more results, see %s' % data['cursor']['moreResultsUrl'])
+  return link
+
 
 user_search = input("Enter search query: ")
 showsome(user_search)
