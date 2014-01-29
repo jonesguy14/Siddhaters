@@ -16,6 +16,4 @@ def showsome(searchfor):
   print('For more results, see %s' % data['cursor']['moreResultsUrl'])
   return link
 
-
-user_search = input("Enter search query: ")
 showsome(user_search)
