@@ -32,19 +32,30 @@ print(webpage[index+7:index2].replace("SparkNotes: ","")+"\n")
 #facts (author)
 factspage = urlopen(main_url+'/facts.html').read().decode()
 for line in factspage.splitlines():
-    if line.find(";&nbsp;")!=-1 and line.find("</p>")!=-1 and line.find("author")!=-1:
+    if line.find(";&nbsp;")!=-1 and line.find("</p>")!=-1 and line.find("author ")!=-1:
         start = line.index(";&nbsp;")
         end = line.index("</p>")
         print("Author: "+line[start+7:end].replace("&rsquo;","'")+"\n")
 
 #characters
 print("CHARACTERS")
+print_next = 0
 characterpage = urlopen(main_url+'/characters.html').read().decode()
 for line in characterpage.splitlines():
+    if print_next == 1:
+        if line.find(".")!=-1:
+            print_next = 0
+            upto = line.find(".")
+            print(charstr, begstr, line[0:upto+1].replace("&rsquo;","'").replace("<i>","").replace("</i>",""))
+        else:
+            begstr = line.replace("&rsquo;","'").strip()
+            #print(line.replace("&rsquo;","'").strip())
     if line.find("<b>")!=-1:
         start = line.index("<b>")
         end = line.index("</b")
-        print("-"+line[start+3:end].replace("&rsquo;","'"))
+        charstr = "-"+line[start+3:end].replace("&rsquo;","'")+": "
+        #print("-"+line[start+3:end].replace("&rsquo;","'")+": ")
+        print_next = 1
 
 #themes
 themespage = urlopen(main_url+'/themes.html').read().decode('utf-8')
