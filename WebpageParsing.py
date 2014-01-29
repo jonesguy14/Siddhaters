@@ -3,7 +3,18 @@ from urllib.request import urlopen
 import json
 import urllib.request, urllib.parse
 
-class Siddhater:    
+class Siddhater(object):
+    def end_of_sent(line):
+        if line.find(".")!=-1:
+            ind = line.find(".")
+            if line[ind-2]=="M" or line[ind-3]=="M":
+                #not end of sentence
+                if end_of_sent(line[ind+1:line.__len__()])==False:
+                    return False
+                else: return True
+            else: return False
+        else: return False
+        
     def showsome(searchfor):
       link = 'null'
       query = urllib.parse.urlencode({'q': 'sparknotes '+searchfor})
@@ -31,6 +42,7 @@ class Siddhater:
         #facts (author)
         factspage = urlopen(main_url+'/facts.html').read().decode()
         for line in factspage.splitlines():
+            #if all(s not in line for s in [";&nbsp;", "</p>", "author"]):
             if line.find(";&nbsp;")!=-1 and line.find("</p>")!=-1 and line.find("author")!=-1:
                 start = line.index(";&nbsp;")
                 end = line.index("</p>")
@@ -43,18 +55,16 @@ class Siddhater:
         characterpage = urlopen(main_url+'/characters.html').read().decode()
         for line in characterpage.splitlines():
             if print_next == 1:
-                if line.find(".")!=-1:
+                if __self__.end_of_sent(line)==True:
                     print_next = 0
                     upto = line.find(".")
                     print(charstr, begstr, line[0:upto+1].replace("&rsquo;","'").replace("<i>","").replace("</i>",""))
                 else:
                     begstr = line.replace("&rsquo;","'").strip()
-                    #print(line.replace("&rsquo;","'").strip())
             if line.find("<b>")!=-1:
                 start = line.index("<b>")
                 end = line.index("</b")
                 charstr = "-"+line[start+3:end].replace("&rsquo;","'")+": "
-                #print("-"+line[start+3:end].replace("&rsquo;","'")+": ")
                 print_next = 1
 
     def get_themes(main_url):
@@ -70,8 +80,8 @@ class Siddhater:
                 if "id=" in line:
                     print("-"+line[start+4:end].replace("&rsquo;","'").split(">")[1])
                 else: print("-"+line[start+4:end].replace("&rsquo;","'"))
-
-    book = input("Enter the book/essay/etc you need: \n")
+    
+    book = input("Enter the book/essay/etc you need: ")
     main_url = showsome(book)
     print(main_url)
     get_title(main_url)
