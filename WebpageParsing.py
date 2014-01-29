@@ -3,19 +3,34 @@ from urllib.request import urlopen
 import json
 import urllib.request, urllib.parse
 
-class Siddhater(object):
-    def end_of_sent(line):
-        if line.find(".")!=-1:
-            ind = line.find(".")
-            if line[ind-2]=="M" or line[ind-3]=="M":
-                #not end of sentence
-                if end_of_sent(line[ind+1:line.__len__()])==False:
-                    return False
-                else: return True
-            else: return False
-        else: return False
-        
-    def showsome(searchfor):
+class Siddhater(object):  
+    def __init__(self):
+        self.rdict = { "&rsquo;" : "'",
+                  "<i>" : "",
+                  "</i>" : "",
+                  "&ldquo;" : "\"",
+                  "&rdquo;" : "\"",
+                  "Sparknotes: " : "",
+                  "Mr." : "Mr",
+                  "Mrs." : "Mrs",
+                  "Dr." : "Dr" }
+    
+        book = input("Enter the book/play/etc you need: ")
+        main_url = self.showsome(book)
+        print(main_url)
+        self.get_title(main_url)
+        self.get_facts(main_url)
+        self.get_characters(main_url)
+        self.get_themes(main_url)
+
+    def replace_all(self, text):
+        #gets rid of bad html stuff
+        for i, j in self.rdict.items():
+            text = text.replace(i, j)
+        return text
+    
+    def showsome(self, searchfor):
+      #google search
       link = 'null'
       query = urllib.parse.urlencode({'q': 'sparknotes '+searchfor})
       url = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&%s' % query
@@ -31,14 +46,14 @@ class Siddhater(object):
       #print('For more results, see %s' % data['cursor']['moreResultsUrl'])
       return link
 
-    def get_title(main_url):
+    def get_title(self, main_url):
         #title
         webpage = urlopen(main_url+'/summary.html').read().decode('utf-8')
         index = webpage.index("<title>")
         index2 = webpage.index("</title>")
-        print(webpage[index+7:index2].replace("SparkNotes: ","")+"\n")
+        print(self.replace_all(webpage[index+7:index2])+"\n")
 
-    def get_facts(main_url):
+    def get_facts(self, main_url):
         #facts (author)
         factspage = urlopen(main_url+'/facts.html').read().decode()
         for line in factspage.splitlines():
@@ -46,28 +61,28 @@ class Siddhater(object):
             if line.find(";&nbsp;")!=-1 and line.find("</p>")!=-1 and line.find("author")!=-1:
                 start = line.index(";&nbsp;")
                 end = line.index("</p>")
-                print("Author: "+line[start+7:end].replace("&rsquo;","'")+"\n")
+                print("Author: "+self.replace_all(line[start+7:end])+"\n")
 
-    def get_characters(main_url):
+    def get_characters(self, main_url):
         #characters
         print("CHARACTERS")
         print_next = 0
         characterpage = urlopen(main_url+'/characters.html').read().decode()
         for line in characterpage.splitlines():
             if print_next == 1:
-                if __self__.end_of_sent(line)==True:
+                if "." in self.replace_all(line):
                     print_next = 0
                     upto = line.find(".")
-                    print(charstr, begstr, line[0:upto+1].replace("&rsquo;","'").replace("<i>","").replace("</i>",""))
+                    print(self.replace_all(charstr), self.replace_all(begstr), self.replace_all(line[0:upto+1]))
                 else:
-                    begstr = line.replace("&rsquo;","'").strip()
+                    begstr = line.strip()
             if line.find("<b>")!=-1:
                 start = line.index("<b>")
                 end = line.index("</b")
-                charstr = "-"+line[start+3:end].replace("&rsquo;","'")+": "
+                charstr = "-"+line[start+3:end]+": "
                 print_next = 1
 
-    def get_themes(main_url):
+    def get_themes(self, main_url):
         #themes
         themespage = urlopen(main_url+'/themes.html').read().decode('utf-8')
         theme_tit_s = themespage.index("<title>")
@@ -78,13 +93,7 @@ class Siddhater(object):
                 start = line.index("<h5")
                 end = line.index("</h5")
                 if "id=" in line:
-                    print("-"+line[start+4:end].replace("&rsquo;","'").split(">")[1])
-                else: print("-"+line[start+4:end].replace("&rsquo;","'"))
-    
-    book = input("Enter the book/essay/etc you need: ")
-    main_url = showsome(book)
-    print(main_url)
-    get_title(main_url)
-    get_facts(main_url)
-    get_characters(main_url)
-    get_themes(main_url)
+                    print("-"+self.replace_all(line[start+4:end]).split(">")[1])
+                else: print("-"+self.replace_all(line[start+4:end]))
+                
+Nirvana = Siddhater()
