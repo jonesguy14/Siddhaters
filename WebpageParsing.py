@@ -5,23 +5,7 @@ import urllib.request, urllib.parse
 
 class Siddhater(object):  
     def __init__(self):
-        self.rdict = { "&rsquo;" : "'",
-                  "<i>" : "",
-                  "</i>" : "",
-                  "&ldquo;" : "\"",
-                  "&rdquo;" : "\"",
-                  "Sparknotes: " : "",
-                  "Mr." : "Mr",
-                  "Mrs." : "Mrs",
-                  "Dr." : "Dr" }
-    
-        book = input("Enter the book/play/etc you need: ")
-        main_url = self.showsome(book)
-        print(main_url)
-        self.get_title(main_url)
-        self.get_facts(main_url)
-        self.get_characters(main_url)
-        self.get_themes(main_url)
+        book = None
 
     def replace_all(self, text):
         #gets rid of bad html stuff
@@ -45,6 +29,25 @@ class Siddhater(object):
         if link=='null': link = h['url']#print(' '+h['url'])
       #print('For more results, see %s' % data['cursor']['moreResultsUrl'])
       return link
+
+    def search(self, title):
+        self.rdict = { "&rsquo;" : "'",
+                  "<i>" : "",
+                  "</i>" : "",
+                  "&ldquo;" : "\"",
+                  "&rdquo;" : "\"",
+                  "Sparknotes: " : "",
+                  "Mr." : "Mr",
+                  "Mrs." : "Mrs",
+                  "Dr." : "Dr" }
+    
+        book = title
+        main_url = self.showsome(book)
+        print(main_url)
+        self.get_title(main_url)
+        self.get_facts(main_url)
+        self.get_characters(main_url)
+        self.get_themes(main_url)
 
     def get_title(self, main_url):
         #title
