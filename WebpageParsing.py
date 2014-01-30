@@ -43,11 +43,13 @@ class Siddhater(object):
     
         book = title
         main_url = self.showsome(book)
-        print(main_url)
-        self.get_title(main_url)
-        self.get_facts(main_url)
-        self.get_characters(main_url)
-        self.get_themes(main_url)
+        if (main_url[0:21]=="http://www.sparknotes"):
+            print(main_url)
+            self.get_title(main_url)
+            self.get_facts(main_url)
+            self.get_characters(main_url)
+            self.get_themes(main_url)
+        else: (print("Unable to find relevant information for search query. Try again."))
 
     def get_title(self, main_url):
         #title

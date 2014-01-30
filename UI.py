@@ -2,9 +2,6 @@ from tkinter import *
 from tkinter import ttk
 
 class TitleEntry(object):
-    def CheckTitle(self, title):
-        if title == 
-        
     def getTitle(self, *args):
         try:
             self.SearchEntry = self.BookTitle.get()
