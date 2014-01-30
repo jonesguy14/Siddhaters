@@ -2,6 +2,9 @@ from tkinter import *
 from tkinter import ttk
 
 class TitleEntry(object):
+    def CheckTitle(self, title):
+        if title == 
+        
     def getTitle(self, *args):
         try:
             self.SearchEntry = self.BookTitle.get()
@@ -9,7 +12,10 @@ class TitleEntry(object):
         except ValueError:
             pass
 
-    def __init__(self):    
+    def __init__(self):
+        SearchEntry = None
+
+    def SearchUI(self):
         self.root = Tk()
         self.root.title("Siddhaters")
 
